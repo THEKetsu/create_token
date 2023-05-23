@@ -16,21 +16,19 @@ pub struct User {
     password: String,
 }
 #[get("/create_token")]
-pub async fn create_token() -> impl Responder {
-    // create token from user name
-    print!("create token");
+pub async fn create_token(_user:web::Form<User>) -> impl Responder {
     let claims = Claims {
         admin: "true".to_owned(),
-        login: "THOMAS".to_owned(),
+        login: _user.user_name.to_owned(),
         exp: 10000000000,
     };
-
-    // encode token
-
     let token = encode(&Header::default(),&claims, &EncodingKey::from_secret("SECRET_KEY".as_ref())).unwrap();
     return HttpResponse::Ok()
     .insert_header(("Authorization",token))
     .body("Token created");
+
+
+
 }
 
 
